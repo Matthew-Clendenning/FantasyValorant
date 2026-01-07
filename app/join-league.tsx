@@ -176,11 +176,12 @@ export default function JoinLeagueScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top }]}>
-        <Text style={styles.headerTitle}>Join a Public League</Text>
-        <Pressable style={styles.cancelButton} onPress={() => router.back()}>
-          <Text style={styles.cancelText}>Cancel</Text>
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        <Pressable style={styles.backButton} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </Pressable>
+        <Text style={styles.headerTitle}>JOIN LEAGUE</Text>
+        <View style={styles.placeholder} />
       </View>
 
       <ScrollView 
@@ -250,27 +251,25 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingBottom: 16,
     backgroundColor: colors.backgroundDark,
-    position: "relative",
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerTitle: {
     fontFamily: fonts.valorant,
-    fontSize: 18,
-    color: colors.text,
-    letterSpacing: 0.5,
-  },
-  cancelButton: {
-    position: "absolute",
-    right: 16,
-    bottom: 16,
-  },
-  cancelText: {
-    fontSize: 16,
+    fontSize: 20,
     color: colors.primary,
-    fontWeight: "500",
+    letterSpacing: 1,
+  },
+  placeholder: {
+    width: 40,
   },
   scrollView: {
     flex: 1,

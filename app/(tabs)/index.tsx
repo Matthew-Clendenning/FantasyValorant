@@ -50,7 +50,7 @@ export default function HomeScreen() {
               <View style={styles.subCardTextContainer}>
                 <Text style={styles.subCardTitle}>CREATE NEW LEAGUE</Text>
                 <Text style={styles.subCardDescription}>
-                  Start your own league and invite friends
+                  Begin a league and invite your friends
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#FF4655" />
@@ -66,7 +66,7 @@ export default function HomeScreen() {
               <View style={styles.subCardTextContainer}>
                 <Text style={styles.subCardTitle}>JOIN PUBLIC LEAGUE</Text>
                 <Text style={styles.subCardDescription}>
-                  Compete in an existing league with other fans
+                  Jump into an active league and test your picks
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#FF4655" />
@@ -106,8 +106,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   cardIcon: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     resizeMode: "contain",
   },
   cardText: {
