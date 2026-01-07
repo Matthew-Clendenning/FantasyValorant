@@ -17,7 +17,6 @@ import { showAlert } from "../src/utils";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
   withTiming,
   runOnJS,
   Easing,

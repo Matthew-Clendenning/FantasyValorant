@@ -1,11 +1,36 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import { Text, View } from "react-native";
 import "react-native-reanimated";
 
 import { AuthProvider } from "../src/contexts/AuthContext";
 
+// Prevent splash screen from auto-hiding until fonts are loaded
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Valorant: require("../assets/fonts/Valorant Font.ttf"),
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, backgroundColor: "#0F1923" }}>
+        <Text style={{ color: "#ECE8E1" }}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <AuthProvider>
       <ThemeProvider value={DefaultTheme}>
@@ -20,6 +45,10 @@ export default function RootLayout() {
               headerShown: false,
               animation: "none",
             }}
+          />
+          <Stack.Screen
+            name="create-league"
+            options={{ headerShown: false }}
           />
         </Stack>
         <StatusBar style="light" />

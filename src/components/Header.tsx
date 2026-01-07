@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#FF4655",
+    color: "#fff",
     letterSpacing: 1,
   },
   placeholder: {
