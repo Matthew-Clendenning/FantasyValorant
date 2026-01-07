@@ -50,6 +50,10 @@ export default function RootLayout() {
             name="create-league"
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="join-league"
+            options={{ headerShown: false }}
+          />
         </Stack>
         <StatusBar style="light" />
       </ThemeProvider>

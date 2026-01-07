@@ -5,12 +5,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Switch,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import { useRouter, type Href } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "../src/contexts/AuthContext";
 import { showAlert } from "../src/utils";
@@ -22,16 +23,16 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-
 export default function SettingsModal() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { height: screenHeight } = useWindowDimensions();
   const { isAuthenticated, signOut } = useAuth();
   const [displayTheme, setDisplayTheme] = useState("System Setting");
   const [oddsLinksEnabled, setOddsLinksEnabled] = useState(true);
 
   // Animation values
-  const translateY = useSharedValue(SCREEN_HEIGHT);
+  const translateY = useSharedValue(screenHeight);
   const backdropOpacity = useSharedValue(0);
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function SettingsModal() {
     // Animate out then navigate back
     backdropOpacity.value = withTiming(0, { duration: 200 });
     translateY.value = withTiming(
-      SCREEN_HEIGHT,
+      screenHeight,
       { duration: 300 },
       (finished) => {
         if (finished) {
@@ -101,9 +102,9 @@ export default function SettingsModal() {
       {/* Modal Content */}
       <Animated.View style={[styles.modalContainer, animatedModalStyle]}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <Text style={styles.headerTitle}>Settings</Text>
-          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+          <TouchableOpacity onPress={handleClose} style={[styles.closeButton, { top: insets.top + 16 }]}>
             <Text style={styles.closeText}>Close</Text>
           </TouchableOpacity>
         </View>
@@ -195,7 +196,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 60,
     paddingBottom: 20,
     paddingHorizontal: 16,
     marginBottom: 10,
@@ -211,7 +211,6 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     right: 16,
-    top: 60,
   },
   closeText: {
     fontSize: 17,

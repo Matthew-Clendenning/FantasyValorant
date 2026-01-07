@@ -1,7 +1,9 @@
 import { router, type Href } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "../../src/contexts/AuthContext";
+import { colors, fonts } from "../../src/styles/theme";
 
 export default function ProfileScreen() {
   const { user, profile, isAuthenticated, signOut, isLoading } = useAuth();
@@ -20,85 +22,96 @@ export default function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Loading...</Text>
-      </View>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <View style={styles.content}>
+          <Text style={styles.text}>Loading...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Profile</Text>
-        <Text style={styles.subtitle}>Sign in to access your profile</Text>
-        <Pressable style={styles.button} onPress={handleSignIn}>
-          <Text style={styles.buttonText}>Sign In</Text>
-        </Pressable>
-      </View>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <View style={styles.content}>
+          <Text style={styles.title}>Profile</Text>
+          <Text style={styles.subtitle}>Sign in to access your profile</Text>
+          <Pressable style={styles.button} onPress={handleSignIn}>
+            <Text style={styles.buttonText}>Sign In</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {profile?.display_name ?? profile?.username ?? "Player"}
-      </Text>
-      <Text style={styles.email}>{user?.email}</Text>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.content}>
+        <Text style={styles.title}>
+          {profile?.display_name ?? profile?.username ?? "Player"}
+        </Text>
+        <Text style={styles.email}>{user?.email}</Text>
 
-      <Pressable style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutText}>Sign Out</Text>
-      </Pressable>
-    </View>
+        <Pressable style={styles.signOutButton} onPress={handleSignOut}>
+          <Text style={styles.signOutText}>Sign Out</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
+  },
+  content: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#0F1923",
     padding: 20,
   },
   title: {
+    fontFamily: fonts.valorant,
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#ECE8E1",
+    color: colors.text,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: "#768079",
+    color: colors.textMuted,
     marginBottom: 24,
+    textAlign: "center",
   },
   email: {
     fontSize: 14,
-    color: "#768079",
+    color: colors.textMuted,
     marginBottom: 32,
   },
   text: {
-    color: "#ECE8E1",
+    fontFamily: fonts.valorant,
+    color: colors.text,
   },
   button: {
-    backgroundColor: "#FF4655",
+    backgroundColor: colors.primary,
     paddingHorizontal: 32,
     paddingVertical: 12,
-    borderRadius: 4,
+    borderRadius: 8,
   },
   buttonText: {
-    color: "#ECE8E1",
+    color: colors.text,
     fontWeight: "600",
     fontSize: 16,
   },
   signOutButton: {
-    borderColor: "#FF4655",
+    borderColor: colors.primary,
     borderWidth: 1,
     paddingHorizontal: 32,
     paddingVertical: 12,
-    borderRadius: 4,
+    borderRadius: 8,
   },
   signOutText: {
-    color: "#FF4655",
+    color: colors.primary,
     fontWeight: "600",
     fontSize: 16,
   },

@@ -8,6 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Input } from "../src/components/Input";
 import { Button } from "../src/components/Button";
@@ -19,6 +20,7 @@ import type { InsertTables } from "../src/types/database";
 
 export default function CreateLeagueScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -80,7 +82,7 @@ export default function CreateLeagueScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </Pressable>
@@ -196,7 +198,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: 60,
     paddingBottom: 16,
     backgroundColor: colors.backgroundDark,
   },

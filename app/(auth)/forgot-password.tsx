@@ -10,12 +10,14 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button, Input } from "../../src/components";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { showAlert } from "../../src/utils";
 
 export default function ForgotPasswordScreen() {
+  const insets = useSafeAreaInsets();
   const { resetPassword } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -65,7 +67,7 @@ export default function ForgotPasswordScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16 }]}
         keyboardShouldPersistTaps="handled"
       >
         <Pressable onPress={handleBack} style={styles.backButton}>
@@ -122,7 +124,6 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   backButton: {
-    marginTop: 40,
     marginBottom: 24,
     alignSelf: "flex-start",
     padding: 8,

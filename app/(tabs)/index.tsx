@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../src/contexts/AuthContext";
 import Header from "../../src/components/Header";
 import { Card } from "../../src/components/Card";
@@ -23,14 +24,18 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Header title="FANTASY VALORANT" />
-      <View style={styles.content}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.subtitle}>
           {displayName ? `Welcome, ${displayName}` : "Welcome, Guest"}
         </Text>
         <Card style={styles.card}>
           <View style={styles.cardHeader}>
             <Image
-              source={require("../../assets/images/react-logo.png")}
+              source={require("../../assets/images/fv_logo_1.png")}
               style={styles.cardIcon}
             />
             <Text style={styles.cardText}>BUILD YOUR DREAM TEAM</Text>
@@ -42,7 +47,7 @@ export default function HomeScreen() {
             onPress={() => router.push("/create-league")}
           >
             <View style={styles.subcardDescContainer}>
-              <View>
+              <View style={styles.subCardTextContainer}>
                 <Text style={styles.subCardTitle}>CREATE NEW LEAGUE</Text>
                 <Text style={styles.subCardDescription}>
                   Start your own league and invite friends
@@ -51,9 +56,24 @@ export default function HomeScreen() {
               <Ionicons name="chevron-forward" size={20} color="#FF4655" />
             </View>
           </Card>
-          <Text style={styles.cardQuestion}>Already have a team? <Text style={styles.spanText}>Log In</Text></Text>
+          <Card
+            style={styles.subCard}
+            pressable
+            gradient={false}
+            onPress={() => router.push("/join-league")}
+          >
+            <View style={styles.subcardDescContainer}>
+              <View style={styles.subCardTextContainer}>
+                <Text style={styles.subCardTitle}>JOIN PUBLIC LEAGUE</Text>
+                <Text style={styles.subCardDescription}>
+                  Compete in an existing league with other fans
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#FF4655" />
+            </View>
+          </Card>
         </Card>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -63,10 +83,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  content: {
     padding: 16,
-    paddingTop: 40,
+    paddingTop: 24,
+    paddingBottom: 32,
   },
   subtitle: {
     fontFamily: fonts.valorant,
@@ -76,27 +99,31 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 12,
-    height: 300,
   },
   cardHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
-    paddingRight: 60,
+    gap: 12,
   },
   cardIcon: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
+    resizeMode: "contain",
   },
   cardText: {
+    flex: 1,
     fontFamily: fonts.valorant,
-    fontSize: 30,
+    fontSize: 28,
     color: colors.text,
   },
   subcardDescContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  subCardTextContainer: {
+    flex: 1,
+    marginRight: 12,
   },
   subCard: {
     marginTop: 16,
@@ -111,15 +138,6 @@ const styles = StyleSheet.create({
   subCardDescription: {
     fontSize: 14,
     color: colors.textMuted,
-  },
-  cardQuestion: {
-    textAlign: "center",
-    marginTop: 20,
-  },
-  spanText: {
-    color: "#fff",
-    textDecorationLine: "underline",
-    fontWeight: "bold",
   },
   text: {
     fontFamily: fonts.valorant,
