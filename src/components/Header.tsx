@@ -13,7 +13,7 @@ export default function Header({ title }: HeaderProps) {
     <View style={styles.header}>
       <TouchableOpacity
         style={styles.settingsButton}
-        onPress={() => router.push("/settings-modal")}
+        onPress={() => router.push("/settings")}
       >
         <Ionicons name="settings-outline" size={18} color="#ECE8E1" />
       </TouchableOpacity>
