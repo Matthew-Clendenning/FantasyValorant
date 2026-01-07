@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useAuth } from "../../src/contexts/AuthContext";
@@ -15,7 +15,7 @@ export default function ProfileScreen() {
   };
 
   const handleSignIn = () => {
-    router.push("/(auth)/login");
+    router.push("/(auth)/login" as Href);
   };
 
   if (isLoading) {

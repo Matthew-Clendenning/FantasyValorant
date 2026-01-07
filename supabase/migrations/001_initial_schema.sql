@@ -309,8 +309,49 @@ CREATE TRIGGER on_auth_user_created
     FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- ============================================================================
+-- TABLE PERMISSIONS (GRANTS)
+-- ============================================================================
+-- These grants allow the anon and authenticated roles to access tables.
+-- RLS policies (below) then filter which rows each user can see/modify.
+
+-- Profiles: public read, authenticated users can insert/update own
+GRANT SELECT ON profiles TO anon, authenticated;
+GRANT INSERT, UPDATE ON profiles TO authenticated;
+
+-- Teams: public read (admin write handled separately)
+GRANT SELECT ON teams TO anon, authenticated;
+
+-- Players: public read (admin write handled separately)
+GRANT SELECT ON players TO anon, authenticated;
+
+-- Scoring configs: public read
+GRANT SELECT ON scoring_configs TO anon, authenticated;
+
+-- Leagues: authenticated users can CRUD
+GRANT SELECT, INSERT, UPDATE, DELETE ON leagues TO authenticated;
+
+-- League members: authenticated users can CRUD
+GRANT SELECT, INSERT, UPDATE, DELETE ON league_members TO authenticated;
+
+-- Matches: public read
+GRANT SELECT ON matches TO anon, authenticated;
+
+-- Player stats: public read
+GRANT SELECT ON player_stats TO anon, authenticated;
+
+-- Rosters: authenticated users can CRUD
+GRANT SELECT, INSERT, UPDATE, DELETE ON rosters TO authenticated;
+
+-- Draft picks: authenticated users can read and insert
+GRANT SELECT, INSERT ON draft_picks TO authenticated;
+
+-- Fantasy scores: authenticated users can read
+GRANT SELECT ON fantasy_scores TO authenticated;
+
+-- ============================================================================
 -- ROW LEVEL SECURITY
 -- ============================================================================
+-- RLS policies control which rows users can access within the granted permissions.
 
 -- Enable RLS on all tables
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;

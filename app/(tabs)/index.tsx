@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
-
 import { useAuth } from "../../src/contexts/AuthContext";
+import Header from "../../src/components/Header";
 
 export default function HomeScreen() {
-  const { user, isLoading } = useAuth();
+  const { profile, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -13,11 +13,13 @@ export default function HomeScreen() {
     );
   }
 
+  const displayName = profile?.display_name || profile?.username;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Fantasy Valorant</Text>
+      <Header title="FANTASY VALORANT" />
       <Text style={styles.subtitle}>
-        {user ? `Welcome, ${user.email}` : "Welcome, Guest"}
+        {displayName ? `Welcome, \n${displayName}` : "Welcome, Guest"}
       </Text>
     </View>
   );
@@ -26,17 +28,17 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: "#0F1923",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#FF4655",
-    marginBottom: 8,
+  content: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   subtitle: {
+    flex: 1,
+    alignContent: "center",
+    textAlign: "center",
     fontSize: 16,
     color: "#ECE8E1",
   },
