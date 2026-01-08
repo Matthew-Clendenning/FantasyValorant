@@ -16,7 +16,86 @@ import { Card } from "../src/components/Card";
 import { colors, fonts } from "../src/styles/theme";
 import { supabase } from "../src/services/supabase";
 import { useAuth } from "../src/contexts/AuthContext";
-import type { InsertTables } from "../src/types/database";
+import type { InsertTables, ScoringType, DraftType } from "../src/types/database";
+
+interface RadioOption<T> {
+  value: T;
+  title: string;
+  description: string;
+}
+
+const scoringTypes: RadioOption<ScoringType>[] = [
+  {
+    value: "h2h_points",
+    title: "Head to Head Points",
+    description: "Score more points than your opponent each week",
+  },
+  {
+    value: "rotisserie",
+    title: "Rotisserie",
+    description: "Earn points by ranking highest in each stat category",
+  },
+  {
+    value: "h2h_categories",
+    title: "Head to Head Categories",
+    description: "Win or lose based on stats like ACS, K/D, and assists",
+  },
+  {
+    value: "season_points",
+    title: "Season Points",
+    description: "Earn as many points as possible over the entire season",
+  },
+];
+
+const draftTypes: RadioOption<DraftType>[] = [
+  {
+    value: "snake",
+    title: "Snake Draft",
+    description: "Pick order reverses each round - great for beginners",
+  },
+  {
+    value: "auction",
+    title: "Auction Draft",
+    description: "Bid on players with a salary budget - more strategic",
+  },
+];
+
+interface RadioGroupProps<T> {
+  options: RadioOption<T>[];
+  selected: T;
+  onSelect: (value: T) => void;
+}
+
+function RadioGroup<T extends string>({
+  options,
+  selected,
+  onSelect,
+}: RadioGroupProps<T>) {
+  return (
+    <View style={styles.radioGroup}>
+      {options.map((option) => {
+        const isSelected = selected === option.value;
+        return (
+          <Pressable
+            key={option.value}
+            style={[styles.radioOption, isSelected && styles.radioOptionSelected]}
+            onPress={() => onSelect(option.value)}
+          >
+            <View style={[styles.radioCircle, isSelected && styles.radioCircleSelected]}>
+              {isSelected && <View style={styles.radioInner} />}
+            </View>
+            <View style={styles.radioContent}>
+              <Text style={[styles.radioTitle, isSelected && styles.radioTitleSelected]}>
+                {option.title}
+              </Text>
+              <Text style={styles.radioDescription}>{option.description}</Text>
+            </View>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
 
 export default function CreateLeagueScreen() {
   const router = useRouter();
@@ -25,6 +104,8 @@ export default function CreateLeagueScreen() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [leagueType, setLeagueType] = useState<"public" | "private">("private");
+  const [scoringType, setScoringType] = useState<ScoringType>("h2h_points");
+  const [draftType, setDraftType] = useState<DraftType>("snake");
   const [maxTeams, setMaxTeams] = useState("8");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -58,6 +139,8 @@ export default function CreateLeagueScreen() {
         name: name.trim(),
         description: description.trim() || null,
         type: leagueType,
+        scoring_type: scoringType,
+        draft_type: draftType,
         max_teams: parseInt(maxTeams, 10),
         owner_id: user.id,
       } satisfies InsertTables<"leagues">;
@@ -154,6 +237,24 @@ export default function CreateLeagueScreen() {
               Public
             </Text>
           </Pressable>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>SCORING TYPE</Text>
+          <RadioGroup
+            options={scoringTypes}
+            selected={scoringType}
+            onSelect={setScoringType}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>DRAFT TYPE</Text>
+          <RadioGroup
+            options={draftTypes}
+            selected={draftType}
+            onSelect={setDraftType}
+          />
         </View>
 
         <Input
@@ -272,6 +373,68 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textMuted,
     lineHeight: 20,
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.text,
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  radioGroup: {
+    gap: 8,
+  },
+  radioOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.surface,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: colors.surfaceLight,
+    padding: 14,
+    gap: 14,
+  },
+  radioOptionSelected: {
+    borderColor: colors.primary,
+    backgroundColor: "rgba(255, 70, 85, 0.08)",
+  },
+  radioCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: colors.surfaceLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  radioCircleSelected: {
+    borderColor: colors.primary,
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: colors.primary,
+  },
+  radioContent: {
+    flex: 1,
+  },
+  radioTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: colors.text,
+    marginBottom: 2,
+  },
+  radioTitleSelected: {
+    color: colors.text,
+  },
+  radioDescription: {
+    fontSize: 13,
+    color: colors.textMuted,
+    lineHeight: 18,
   },
   bottomPadding: {
     height: 40,

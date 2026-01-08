@@ -8,11 +8,13 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
 } from "react-native";
 
 import { Button, Divider, Input, SocialButton } from "../../src/components";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { showAlert } from "../../src/utils";
+import { colors, fonts } from "../../src/styles/theme";
 
 export default function LoginScreen() {
   const { signInWithEmail, signInWithDiscord, isLoading } = useAuth();
@@ -80,8 +82,10 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Fantasy Valorant</Text>
-          <Text style={styles.subtitle}>Sign in to your account</Text>
+          <Image
+            source={require("../../assets/images/fv_logo_3.png")}
+            style={styles.icon}
+          />
         </View>
 
         <View style={styles.form}>
@@ -153,15 +157,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 40,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#ECE8E1",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#768079",
+  icon: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
   },
   form: {
     marginBottom: 24,

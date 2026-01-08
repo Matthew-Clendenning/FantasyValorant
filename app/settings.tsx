@@ -112,7 +112,7 @@ export default function SettingsModal() {
         {/* Settings List */}
         <ScrollView style={styles.scrollView}>
           {/* Display Theme */}
-          <TouchableOpacity style={styles.settingItem}>
+          {/*<TouchableOpacity style={styles.settingItem}>
             <Text style={styles.settingLabel}>Display Theme</Text>
             <View style={styles.settingValue}>
               <Text style={styles.valueText}>{displayTheme}</Text>
@@ -123,7 +123,7 @@ export default function SettingsModal() {
           <View style={styles.divider} />
 
           {/* Toggle Setting */}
-          <View style={styles.settingItem}>
+          {/*<View style={styles.settingItem}>
             <Text style={styles.settingLabel}>Sportsbook Odds Links</Text>
             <Switch
               value={oddsLinksEnabled}
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 16,
     paddingHorizontal: 16,
-    backgroundColor: "#2d2d2dff"
+    backgroundColor: "#2d2d2dff",
   },
   settingLabel: {
     fontSize: 17,
@@ -243,6 +243,6 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: "#1C1C1E",
-    marginLeft: 16,
+    marginBlock: 1,
   },
 });

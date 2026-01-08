@@ -15,7 +15,7 @@ export default function Header({ title }: HeaderProps) {
         style={styles.settingsButton}
         onPress={() => router.push("/settings")}
       >
-        <Ionicons name="settings-outline" size={18} color="#ECE8E1" />
+        <Ionicons name="settings-sharp" size={16} color="#ECE8E1" />
       </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.placeholder} />
@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#0a1218ff",
   },
   settingsButton: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     borderRadius: 25,
     backgroundColor: "#2A2A2A",
     alignItems: "center",

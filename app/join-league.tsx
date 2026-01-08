@@ -14,11 +14,11 @@ import { Button } from "../src/components/Button";
 import { colors, fonts } from "../src/styles/theme";
 import { supabase } from "../src/services/supabase";
 import { useAuth } from "../src/contexts/AuthContext";
+import type { ScoringType, DraftType } from "../src/types/database";
 
+// Local types for UI preferences (not stored in DB)
 type ExperienceLevel = "pro" | "casual";
-type ScoringType = "h2h_points" | "season_points" | "h2h_categories" | "rotisserie";
 type LeagueFormat = "tournament" | "season" | "split";
-type DraftType = "snake" | "auction";
 
 interface RadioOption<T> {
   value: T;
@@ -306,8 +306,8 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   radioOptionSelected: {
-    borderColor: "#3B82F6",
-    backgroundColor: "rgba(59, 130, 246, 0.08)",
+    borderColor: colors.primary,
+    backgroundColor: "rgba(255, 70, 85, 0.08)",
   },
   radioCircle: {
     width: 22,
@@ -319,13 +319,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   radioCircleSelected: {
-    borderColor: "#3B82F6",
+    borderColor: colors.primary,
   },
   radioInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: "#3B82F6",
+    backgroundColor: colors.primary,
   },
   radioContent: {
     flex: 1,

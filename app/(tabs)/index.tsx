@@ -1,17 +1,40 @@
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../src/contexts/AuthContext";
 import Header from "../../src/components/Header";
 import { Card } from "../../src/components/Card";
 import { colors, fonts } from "../../src/styles/theme";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  hasUserLoggedInBefore,
+  markUserAsLoggedIn,
+} from "../../src/utils/welcomeStorage";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { profile, isLoading } = useAuth();
+  const { user, profile, isLoading } = useAuth();
+  const [isReturningUser, setIsReturningUser] = useState<boolean | null>(null);
 
-  if (isLoading) {
+  useEffect(() => {
+    async function checkReturningUser() {
+      if (!user?.id) return;
+
+      const hasLoggedInBefore = await hasUserLoggedInBefore(user.id);
+      setIsReturningUser(hasLoggedInBefore);
+
+      // Mark as logged in for next time (after a short delay so they see the message)
+      if (!hasLoggedInBefore) {
+        setTimeout(() => {
+          markUserAsLoggedIn(user.id);
+        }, 2000);
+      }
+    }
+
+    checkReturningUser();
+  }, [user?.id]);
+
+  if (isLoading || isReturningUser === null) {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Loading...</Text>
@@ -20,6 +43,7 @@ export default function HomeScreen() {
   }
 
   const displayName = profile?.display_name || profile?.username;
+  const welcomeText = isReturningUser ? "Welcome back" : "Welcome";
 
   return (
     <View style={styles.container}>
@@ -30,13 +54,19 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.subtitle}>
-          {displayName ? `Welcome, ${displayName}` : "Welcome, Guest"}
+          {displayName ? `${welcomeText}, ${displayName}` : "Welcome, Guest"}
         </Text>
-        <Card style={styles.card}>
+        <View style={styles.cardGlowWrapper}>
+          <View style={styles.cardGlow} />
+          <Card
+            style={styles.card}
+            backgroundImage={require("../../assets/images/dots.png")}
+            backgroundOpacity={0.35}
+          >
           <View style={styles.cardHeader}>
             <Image
-              source={require("../../assets/images/fv_logo_1.png")}
-              style={styles.cardIcon}
+              source={require("../../assets/images/fv_logo_3.png")}
+              style={styles.logo}
             />
             <Text style={styles.cardText}>BUILD YOUR DREAM TEAM</Text>
           </View>
@@ -73,6 +103,7 @@ export default function HomeScreen() {
             </View>
           </Card>
         </Card>
+        </View>
       </ScrollView>
     </View>
   );
@@ -93,19 +124,41 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontFamily: fonts.valorant,
-    fontSize: 18,
+    fontSize: 14,
     color: colors.text,
-    paddingBottom: 16,
+    paddingBottom: 10,
+  },
+  cardGlowWrapper: {
+    position: "relative",
+  },
+  cardGlow: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+    right: 8,
+    bottom: 8,
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    opacity: 0.3,
+    // iOS shadow for enhanced glow
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 25,
+    // Android elevation (limited effect)
+    elevation: 20,
   },
   card: {
-    marginBottom: 12,
+    paddingBottom: 30,
   },
   cardHeader: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
+    justifyContent: "center",
     gap: 12,
+    paddingBlock: 18,
   },
-  cardIcon: {
+  logo: {
     width: 50,
     height: 50,
     resizeMode: "contain",
@@ -126,8 +179,8 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   subCard: {
-    marginTop: 16,
     backgroundColor: colors.surfaceLight,
+    marginBottom: 10,
   },
   subCardTitle: {
     fontFamily: fonts.valorant,

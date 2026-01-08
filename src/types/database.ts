@@ -21,8 +21,14 @@ export type PlayerRole = "duelist" | "initiator" | "controller" | "sentinel" | "
 /** League visibility */
 export type LeagueType = "public" | "private";
 
-/** Draft format */
+/** Draft format (legacy - use DraftType instead) */
 export type DraftFormat = "snake";
+
+/** Scoring type - competition format */
+export type ScoringType = "h2h_points" | "season_points" | "h2h_categories" | "rotisserie";
+
+/** Draft type - draft format */
+export type DraftType = "snake" | "auction";
 
 /** Draft status */
 export type DraftStatus = "pending" | "in_progress" | "completed";
@@ -193,6 +199,8 @@ export interface Database {
           name: string;
           description: string | null;
           type: LeagueType;
+          scoring_type: ScoringType;
+          draft_type: DraftType;
           draft_format: DraftFormat;
           max_teams: number;
           roster_size: number;
@@ -209,6 +217,8 @@ export interface Database {
           name: string;
           description?: string | null;
           type?: LeagueType;
+          scoring_type?: ScoringType;
+          draft_type?: DraftType;
           draft_format?: DraftFormat;
           max_teams?: number;
           roster_size?: number;
@@ -224,6 +234,8 @@ export interface Database {
           name?: string;
           description?: string | null;
           type?: LeagueType;
+          scoring_type?: ScoringType;
+          draft_type?: DraftType;
           draft_format?: DraftFormat;
           max_teams?: number;
           roster_size?: number;
@@ -420,6 +432,8 @@ export interface Database {
     Enums: {
       player_role: PlayerRole;
       league_type: LeagueType;
+      scoring_type: ScoringType;
+      draft_type: DraftType;
       draft_format: DraftFormat;
       draft_status: DraftStatus;
       match_status: MatchStatus;
