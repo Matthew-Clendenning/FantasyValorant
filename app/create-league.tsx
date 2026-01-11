@@ -130,11 +130,23 @@ export default function CreateLeagueScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Generate a random invite code (8 characters, alphanumeric, no ambiguous chars)
+  const generateInviteCode = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let result = "";
+    for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
   const handleCreate = async () => {
     if (!validate() || !user) return;
 
     setIsLoading(true);
     try {
+      const inviteCode = generateInviteCode();
+
       const leagueData = {
         name: name.trim(),
         description: description.trim() || null,
@@ -143,19 +155,24 @@ export default function CreateLeagueScreen() {
         draft_type: draftType,
         max_teams: parseInt(maxTeams, 10),
         owner_id: user.id,
+        invite_code: inviteCode,
       } satisfies InsertTables<"leagues">;
 
       const { error } = await supabase
         .from("leagues")
-        .insert(leagueData as never)
-        .select()
-        .single();
+        .insert(leagueData as never);
 
       if (error) throw error;
 
-      Alert.alert("Success", "League created successfully!", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
+      // Navigate back to home with success params to show congrats modal
+      router.replace({
+        pathname: "/(tabs)",
+        params: {
+          showCongrats: "true",
+          leagueName: name.trim(),
+          inviteCode: inviteCode,
+        },
+      });
     } catch {
       Alert.alert("Error", "Failed to create league. Please try again.");
     } finally {
