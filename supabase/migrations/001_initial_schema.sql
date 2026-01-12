@@ -246,7 +246,7 @@ BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = '';
 
 -- Generate random invite code
 CREATE OR REPLACE FUNCTION generate_invite_code()
@@ -261,7 +261,7 @@ BEGIN
     END LOOP;
     RETURN result;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = '';
 
 -- Auto-create profile on user signup
 CREATE OR REPLACE FUNCTION handle_new_user()
@@ -276,7 +276,7 @@ BEGIN
     );
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- ============================================================================
 -- TRIGGERS

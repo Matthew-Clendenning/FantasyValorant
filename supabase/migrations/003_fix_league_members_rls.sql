@@ -11,33 +11,33 @@ CREATE OR REPLACE FUNCTION is_league_owner(league_id UUID, user_id UUID)
 RETURNS BOOLEAN AS $$
 BEGIN
     RETURN EXISTS (
-        SELECT 1 FROM leagues
+        SELECT 1 FROM public.leagues
         WHERE id = league_id AND owner_id = user_id
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- Check if user is a member of a league (bypasses RLS)
 CREATE OR REPLACE FUNCTION is_league_member(league_id UUID, user_id UUID)
 RETURNS BOOLEAN AS $$
 BEGIN
     RETURN EXISTS (
-        SELECT 1 FROM league_members
-        WHERE league_members.league_id = $1 AND league_members.user_id = $2
+        SELECT 1 FROM public.league_members
+        WHERE public.league_members.league_id = $1 AND public.league_members.user_id = $2
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- Check if league is public (bypasses RLS)
 CREATE OR REPLACE FUNCTION is_league_public(league_id UUID)
 RETURNS BOOLEAN AS $$
 BEGIN
     RETURN EXISTS (
-        SELECT 1 FROM leagues
+        SELECT 1 FROM public.leagues
         WHERE id = league_id AND type = 'public'
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- ============================================================================
 -- STEP 2: Drop all existing problematic policies
