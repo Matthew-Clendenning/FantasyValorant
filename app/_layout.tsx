@@ -8,6 +8,8 @@ import { Text, View } from "react-native";
 import "react-native-reanimated";
 
 import { AuthProvider } from "../src/contexts/AuthContext";
+import { QueryProvider } from "../src/contexts/QueryProvider";
+import { ErrorBoundary } from "../src/components";
 
 // Prevent splash screen from auto-hiding until fonts are loaded
 SplashScreen.preventAutoHideAsync();
@@ -32,32 +34,36 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <ThemeProvider value={DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="league" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="settings"
-            options={{
-              presentation: "transparentModal",
-              headerShown: false,
-              animation: "none",
-            }}
-          />
-          <Stack.Screen
-            name="create-league"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="join-league"
-            options={{ headerShown: false }}
-          />
-        </Stack>
-        <StatusBar style="light" />
-      </ThemeProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <QueryProvider>
+          <ThemeProvider value={DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="league" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="settings"
+                options={{
+                  presentation: "transparentModal",
+                  headerShown: false,
+                  animation: "none",
+                }}
+              />
+              <Stack.Screen
+                name="create-league"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="join-league"
+                options={{ headerShown: false }}
+              />
+            </Stack>
+            <StatusBar style="light" />
+          </ThemeProvider>
+        </QueryProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

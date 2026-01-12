@@ -12,8 +12,8 @@ import {
 
 import { Button, Divider, Input, SocialButton } from "../../src/components";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { showAlert } from "../../src/utils";
-import { colors, fonts } from "../../src/styles/theme";
+import { showAlert, sanitizeUsername, sanitizeEmail } from "../../src/utils";
+import { getPasswordError } from "../../src/utils/passwordValidation";
 
 export default function SignupScreen() {
   const { signUpWithEmail, signInWithDiscord, isLoading } = useAuth();
@@ -32,13 +32,13 @@ export default function SignupScreen() {
   const validate = () => {
     const newErrors: typeof errors = {};
 
-    // Username validation
+    // Username validation (matches database constraint: 3-30 characters)
     if (!username.trim()) {
       newErrors.username = "Username is required";
     } else if (username.length < 3) {
       newErrors.username = "Username must be at least 3 characters";
-    } else if (username.length > 20) {
-      newErrors.username = "Username must be 20 characters or less";
+    } else if (username.length > 30) {
+      newErrors.username = "Username must be 30 characters or less";
     } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
       newErrors.username = "Username can only contain letters, numbers, and underscores";
     }
@@ -50,11 +50,14 @@ export default function SignupScreen() {
       newErrors.email = "Enter a valid email address";
     }
 
-    // Password validation
+    // Password validation (8+ chars with complexity requirements)
     if (!password) {
       newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+    } else {
+      const passwordError = getPasswordError(password);
+      if (passwordError) {
+        newErrors.password = passwordError;
+      }
     }
 
     // Confirm password validation
@@ -72,7 +75,11 @@ export default function SignupScreen() {
     if (!validate()) return;
 
     try {
-      await signUpWithEmail(email, password, username);
+      // Sanitize inputs before sending to server
+      const sanitizedEmail = sanitizeEmail(email);
+      const sanitizedUsername = sanitizeUsername(username);
+      
+      await signUpWithEmail(sanitizedEmail, password, sanitizedUsername);
       showAlert(
         "Check Your Email",
         "We've sent a confirmation link to your email address. Please verify your email to continue.",

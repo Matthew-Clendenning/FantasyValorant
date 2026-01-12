@@ -14,7 +14,6 @@ import {
 import { Button, Divider, Input, SocialButton } from "../../src/components";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { showAlert } from "../../src/utils";
-import { colors, fonts } from "../../src/styles/theme";
 
 export default function LoginScreen() {
   const { signInWithEmail, signInWithDiscord, isLoading } = useAuth();

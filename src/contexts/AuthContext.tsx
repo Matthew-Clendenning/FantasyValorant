@@ -10,9 +10,11 @@ import {
   useState,
 } from "react";
 
-import { supabase } from "../services/supabase";
+import { supabase, db } from "../services/supabase";
 
-import type { Profile } from "../types/database";
+import type { Profile, Database } from "../types/database";
+
+type ProfileInsert = Database["public"]["Tables"]["profiles"]["Insert"];
 
 // Required for web browser auth session
 WebBrowser.maybeCompleteAuthSession();
@@ -53,7 +55,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchProfile = useCallback(
     async (userId: string, userMetadata?: Record<string, unknown>) => {
       try {
-        console.log("[fetchProfile] Fetching profile for userId:", userId);
+        if (__DEV__) {
+          // Only log sanitized user ID in development
+          console.log("[fetchProfile] Fetching profile for userId:", userId?.substring(0, 8) + "...");
+        }
 
         const { data, error } = await supabase
           .from("profiles")
@@ -61,7 +66,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .eq("id", userId)
           .single();
 
-        console.log("[fetchProfile] Result:", { data, error });
+        if (__DEV__ && error) {
+          // Only log error codes, not full error details
+          console.log("[fetchProfile] Error code:", error.code);
+        }
 
         // Profile exists, return it
         if (data) return data;
@@ -85,35 +93,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const avatarUrl = userMetadata?.avatar_url as string | undefined;
 
           // Create profile for OAuth user
-          const profileData = {
+          const profileData: ProfileInsert = {
             id: userId,
             username: username.substring(0, 30),
             display_name: displayName,
             avatar_url: avatarUrl ?? null,
           };
 
-          const { data: newProfile, error: insertError } = await supabase
-            .from("profiles")
-            .insert(profileData as never)
-            .select()
-            .single();
+          const { data: newProfile, error: insertError } = await db.insertAndReturn(
+            "profiles",
+            profileData
+          );
 
           if (insertError) {
             // If username conflict, try with a unique suffix
             if (insertError.code === "23505") {
               const uniqueUsername = `${username.substring(0, 22)}_${Date.now().toString(36)}`;
-              const retryData = {
+              const retryData: ProfileInsert = {
                 id: userId,
                 username: uniqueUsername,
                 display_name: displayName,
                 avatar_url: avatarUrl ?? null,
               };
 
-              const { data: retryProfile, error: retryError } = await supabase
-                .from("profiles")
-                .insert(retryData as never)
-                .select()
-                .single();
+              const { data: retryProfile, error: retryError } = await db.insertAndReturn(
+                "profiles",
+                retryData
+              );
 
               if (retryError) {
                 return null;
@@ -153,15 +159,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      console.log("[AuthContext] Initial session:", session?.user?.id);
-      console.log("[AuthContext] User metadata:", session?.user?.user_metadata);
+      if (__DEV__) {
+        // Only log sanitized user ID in development
+        console.log("[AuthContext] Initial session:", session?.user?.id?.substring(0, 8) + "...");
+      }
 
       const user = session?.user ?? null;
       const profile = user
         ? await fetchProfile(user.id, user.user_metadata)
         : null;
 
-      console.log("[AuthContext] Fetched profile:", profile);
+      if (__DEV__) {
+        // Only log that profile was fetched, not the profile data
+        console.log("[AuthContext] Profile fetched:", profile ? "success" : "not found");
+      }
 
       setState({
         user,

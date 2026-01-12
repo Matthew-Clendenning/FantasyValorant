@@ -44,3 +44,27 @@ app-example
 
 # claude
 /CLAUDE.md
+
+# cursor rules
+/.cursorrules
+
+# claude tmp files
+/tmpclaude*
+
+# phase files
+/PHASES.md
+/PHASE_1.md
+/PHASE_2.md
+/PHASE_3.md
+/PHASE_4.md
+/PHASE_5.md
+
+# agent guide
+/AGENT_GUIDE.md
+
+# cursor guide
+/CURSOR_GUIDE.md
+
+# security guides
+/SECURITY_GUIDELINES.md
+/SECURITY_AUDIT.md

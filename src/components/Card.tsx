@@ -2,7 +2,6 @@ import {
   Pressable,
   StyleSheet,
   View,
-  Image,
   ImageBackground,
   type PressableProps,
   type ViewStyle,

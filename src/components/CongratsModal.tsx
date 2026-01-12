@@ -19,6 +19,8 @@ interface CongratsModalProps {
     onClose: () => void;
     leagueName?: string;
     inviteCode?: string;
+    title?: string;
+    subtitle?: string;
 }
 
 export function CongratsModal({
@@ -26,6 +28,8 @@ export function CongratsModal({
     onClose,
     leagueName = "your league",
     inviteCode = "ABC123",
+    title = "Congrats!",
+    subtitle = "You created your fantasy Valorant league!\nNow invite your friends to play against.",
 }: CongratsModalProps) {
     const [showCopiedToast, setShowCopiedToast] = useState(false);
     const [fadeAnim] = useState(new Animated.Value(0));
@@ -134,11 +138,8 @@ export function CongratsModal({
                         </Pressable>
 
                         {/* Content */}
-                        <Text style={styles.title}>Congrats!</Text>
-                        <Text style={styles.subtitle}>
-                            You created your fantasy Valorant league!{"\n"}
-                            Now invite your friends to play against.
-                        </Text>
+                        <Text style={styles.title}>{title}</Text>
+                        <Text style={styles.subtitle}>{subtitle}</Text>
 
                         {/* Buttons */}
                         <Pressable style={styles.primaryButton} onPress={handleCopyLink}>

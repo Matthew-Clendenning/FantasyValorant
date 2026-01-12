@@ -1,22 +1,27 @@
+import { Ionicons } from "@expo/vector-icons";
+import * as Crypto from "expo-crypto";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
+  Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  ScrollView,
-  Pressable,
-  Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { Input } from "../src/components/Input";
 import { Button } from "../src/components/Button";
 import { Card } from "../src/components/Card";
-import { colors, fonts } from "../src/styles/theme";
-import { supabase } from "../src/services/supabase";
+import { Input } from "../src/components/Input";
 import { useAuth } from "../src/contexts/AuthContext";
-import type { InsertTables, ScoringType, DraftType } from "../src/types/database";
+import { db } from "../src/services/supabase";
+import { colors, fonts } from "../src/styles/theme";
+import type { Database, DraftType, ScoringType } from "../src/types/database";
+import { sanitizeDescription, sanitizeName } from "../src/utils";
+
+type LeagueInsert = Database["public"]["Tables"]["leagues"]["Insert"];
+type LeagueMemberInsert = Database["public"]["Tables"]["league_members"]["Insert"];
 
 interface RadioOption<T> {
   value: T;
@@ -121,6 +126,11 @@ export default function CreateLeagueScreen() {
       newErrors.name = "League name must be less than 50 characters";
     }
 
+    // Validate description length if provided
+    if (description && description.length > 500) {
+      newErrors.description = "Description must be less than 500 characters";
+    }
+
     const teams = parseInt(maxTeams, 10);
     if (isNaN(teams) || teams < 2 || teams > 16) {
       newErrors.maxTeams = "Max teams must be between 2 and 16";
@@ -130,14 +140,14 @@ export default function CreateLeagueScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Generate a random invite code (8 characters, alphanumeric, no ambiguous chars)
-  const generateInviteCode = () => {
+  // Generate a cryptographically secure random invite code (12 characters, alphanumeric, no ambiguous chars)
+  const generateInviteCode = async (): Promise<string> => {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let result = "";
-    for (let i = 0; i < 8; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
+    // Generate 12 bytes for a 12-character code
+    const randomBytes = await Crypto.getRandomBytesAsync(12);
+    return Array.from(randomBytes)
+      .map((byte) => chars[byte % chars.length])
+      .join("");
   };
 
   const handleCreate = async () => {
@@ -145,31 +155,56 @@ export default function CreateLeagueScreen() {
 
     setIsLoading(true);
     try {
-      const inviteCode = generateInviteCode();
+      const inviteCode = await generateInviteCode();
 
-      const leagueData = {
-        name: name.trim(),
-        description: description.trim() || null,
+      // Sanitize user inputs before storing
+      const sanitizedName = sanitizeName(name);
+      const sanitizedDescription = description
+        ? sanitizeDescription(description, 500)
+        : null;
+
+      const leagueData: LeagueInsert = {
+        name: sanitizedName,
+        description: sanitizedDescription,
         type: leagueType,
         scoring_type: scoringType,
         draft_type: draftType,
         max_teams: parseInt(maxTeams, 10),
         owner_id: user.id,
         invite_code: inviteCode,
-      } satisfies InsertTables<"leagues">;
+      };
 
-      const { error } = await supabase
-        .from("leagues")
-        .insert(leagueData as never);
+      // Create the league
+      const { data: newLeague, error: leagueError } = await db.insertAndSelect(
+        "leagues",
+        leagueData,
+        "id"
+      );
 
-      if (error) throw error;
+      if (leagueError || !newLeague || !newLeague.id) throw leagueError;
+
+      // Add the owner as a league member (commissioner)
+      const username = user.user_metadata?.username || "Owner";
+      const memberData: LeagueMemberInsert = {
+        league_id: newLeague.id,
+        user_id: user.id,
+        team_name: `${username}'s Team`,
+        is_commissioner: true,
+      };
+
+      const { error: memberError } = await db.insert("league_members", memberData);
+
+      if (memberError) {
+        console.error("Error adding owner as member:", memberError);
+        // Don't throw - league was created, just member addition failed
+      }
 
       // Navigate back to home with success params to show congrats modal
       router.replace({
         pathname: "/(tabs)",
         params: {
           showCongrats: "true",
-          leagueName: name.trim(),
+          leagueName: sanitizedName,
           inviteCode: inviteCode,
         },
       });
@@ -205,8 +240,10 @@ export default function CreateLeagueScreen() {
           placeholder="Describe your league"
           value={description}
           onChangeText={setDescription}
+          error={errors.description}
           multiline
           numberOfLines={3}
+          maxLength={500}
           style={styles.textArea}
         />
 

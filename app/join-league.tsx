@@ -167,7 +167,7 @@ export default function JoinLeagueScreen() {
       // For now, join the first available league
       // In production, you'd show a list or implement matchmaking
       Alert.alert("Success", "Found matching leagues! This feature is coming soon.");
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Failed to search for leagues. Please try again.");
     } finally {
       setIsLoading(false);

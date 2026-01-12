@@ -224,7 +224,10 @@ export default function HomeScreen() {
                   <Pressable
                     key={league.id}
                     style={styles.leagueCard}
-                    onPress={() => router.push(`/league/${league.id}` as never)}
+                    onPress={() => router.push({
+                      pathname: "/league/[id]",
+                      params: { id: league.id }
+                    })}
                   >
                     <View style={styles.leagueCardContent}>
                       <View style={styles.leagueInfo}>

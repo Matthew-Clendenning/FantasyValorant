@@ -4,12 +4,11 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  Switch,
   useWindowDimensions,
 } from "react-native";
 import { useRouter, type Href } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -28,8 +27,6 @@ export default function SettingsModal() {
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
   const { isAuthenticated, signOut } = useAuth();
-  const [displayTheme, setDisplayTheme] = useState("System Setting");
-  const [oddsLinksEnabled, setOddsLinksEnabled] = useState(true);
 
   // Animation values
   const translateY = useSharedValue(screenHeight);
@@ -42,7 +39,7 @@ export default function SettingsModal() {
         easing: Easing.out(Easing.cubic),
     });
     backdropOpacity.value = withTiming(1, { duration: 300 });
-    }, []);
+  }, [translateY, backdropOpacity]);
 
   const handleClose = () => {
     // Animate out then navigate back

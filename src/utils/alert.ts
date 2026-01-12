@@ -14,8 +14,8 @@ export function showAlert(
   buttons?: AlertButton[]
 ) {
   if (Platform.OS === "web") {
-    // Web fallback using window.alert/confirm
-    const result = window.alert(`${title}\n\n${message}`);
+    // Web fallback using window.alert
+    window.alert(`${title}\n\n${message}`);
 
     // Call the first button's onPress if provided
     if (buttons && buttons.length > 0 && buttons[0].onPress) {
