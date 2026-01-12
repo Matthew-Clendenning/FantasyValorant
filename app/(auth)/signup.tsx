@@ -12,7 +12,14 @@ import {
 
 import { Button, Divider, Input, SocialButton } from "../../src/components";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { showAlert, sanitizeUsername, sanitizeEmail } from "../../src/utils";
+import {
+  showAlert,
+  sanitizeUsername,
+  sanitizeEmail,
+  checkRateLimit,
+  recordAttempt,
+  formatWaitTime,
+} from "../../src/utils";
 import { getPasswordError } from "../../src/utils/passwordValidation";
 
 export default function SignupScreen() {
@@ -74,11 +81,21 @@ export default function SignupScreen() {
   const handleSignUp = async () => {
     if (!validate()) return;
 
+    // Check rate limit before attempting signup
+    const rateLimitCheck = checkRateLimit("signup");
+    if (rateLimitCheck.isLimited) {
+      showAlert(
+        "Too Many Attempts",
+        `Please wait ${formatWaitTime(rateLimitCheck.waitTimeSeconds!)} before trying again.`
+      );
+      return;
+    }
+
     try {
       // Sanitize inputs before sending to server
       const sanitizedEmail = sanitizeEmail(email);
       const sanitizedUsername = sanitizeUsername(username);
-      
+
       await signUpWithEmail(sanitizedEmail, password, sanitizedUsername);
       showAlert(
         "Check Your Email",
@@ -86,6 +103,16 @@ export default function SignupScreen() {
         [{ text: "OK", onPress: () => router.replace("/(auth)/login" as Href) }]
       );
     } catch (error) {
+      // Record failed attempt
+      const attemptResult = recordAttempt("signup");
+      if (attemptResult.isLimited) {
+        showAlert(
+          "Too Many Attempts",
+          `Too many failed signup attempts. Please wait ${formatWaitTime(attemptResult.waitTimeSeconds!)} before trying again.`
+        );
+        return;
+      }
+
       const message =
         error instanceof Error ? error.message : "Failed to create account";
       showAlert("Sign Up Failed", message);

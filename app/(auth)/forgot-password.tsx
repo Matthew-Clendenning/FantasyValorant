@@ -14,7 +14,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button, Input } from "../../src/components";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { showAlert } from "../../src/utils";
+import {
+  showAlert,
+  checkRateLimit,
+  recordAttempt,
+  formatWaitTime,
+} from "../../src/utils";
 
 export default function ForgotPasswordScreen() {
   const insets = useSafeAreaInsets();
@@ -40,15 +45,29 @@ export default function ForgotPasswordScreen() {
   const handleResetPassword = async () => {
     if (!validate()) return;
 
+    // Check rate limit to prevent email spam
+    const rateLimitCheck = checkRateLimit("password-reset");
+    if (rateLimitCheck.isLimited) {
+      showAlert(
+        "Too Many Requests",
+        `Please wait ${formatWaitTime(rateLimitCheck.waitTimeSeconds!)} before requesting another reset email.`
+      );
+      return;
+    }
+
     setIsLoading(true);
     try {
       await resetPassword(email);
+      // Record attempt after sending (successful or not, to prevent enumeration)
+      recordAttempt("password-reset");
       showAlert(
         "Check Your Email",
         "We've sent password reset instructions to your email address.",
         [{ text: "OK", onPress: () => router.replace("/(auth)/login" as Href) }]
       );
     } catch (err) {
+      // Record attempt even on failure to prevent enumeration attacks
+      recordAttempt("password-reset");
       const message =
         err instanceof Error ? err.message : "Failed to send reset email";
       showAlert("Reset Failed", message);

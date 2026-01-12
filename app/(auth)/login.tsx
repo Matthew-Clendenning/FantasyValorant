@@ -13,7 +13,14 @@ import {
 
 import { Button, Divider, Input, SocialButton } from "../../src/components";
 import { useAuth } from "../../src/contexts/AuthContext";
-import { showAlert } from "../../src/utils";
+import {
+  showAlert,
+  sanitizeEmail,
+  checkRateLimit,
+  recordAttempt,
+  clearRateLimit,
+  formatWaitTime,
+} from "../../src/utils";
 
 export default function LoginScreen() {
   const { signInWithEmail, signInWithDiscord, isLoading } = useAuth();
@@ -44,9 +51,32 @@ export default function LoginScreen() {
   const handleSignIn = async () => {
     if (!validate()) return;
 
+    // Check rate limit before attempting login
+    const rateLimitCheck = checkRateLimit("login");
+    if (rateLimitCheck.isLimited) {
+      showAlert(
+        "Too Many Attempts",
+        `Please wait ${formatWaitTime(rateLimitCheck.waitTimeSeconds!)} before trying again.`
+      );
+      return;
+    }
+
     try {
-      await signInWithEmail(email, password);
+      const sanitizedEmail = sanitizeEmail(email);
+      await signInWithEmail(sanitizedEmail, password);
+      // Clear rate limit on successful login
+      clearRateLimit("login");
     } catch (error) {
+      // Record failed attempt
+      const attemptResult = recordAttempt("login");
+      if (attemptResult.isLimited) {
+        showAlert(
+          "Too Many Attempts",
+          `Too many failed login attempts. Please wait ${formatWaitTime(attemptResult.waitTimeSeconds!)} before trying again.`
+        );
+        return;
+      }
+
       const message =
         error instanceof Error ? error.message : "Failed to sign in";
       showAlert("Sign In Failed", message);

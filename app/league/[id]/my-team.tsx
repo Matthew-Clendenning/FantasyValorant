@@ -125,7 +125,9 @@ export default function MyTeamScreen() {
           .maybeSingle();
 
         if (memberError) {
-          console.error("Error fetching member:", memberError);
+          if (__DEV__) {
+            console.error("Error fetching member:", memberError.code);
+          }
         } else if (memberData) {
           const typedMemberData = memberData as LeagueMember;
           setLeagueMember(typedMemberData);
@@ -185,7 +187,9 @@ export default function MyTeamScreen() {
           setBench(emptyBench);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        if (__DEV__) {
+          console.error("Error fetching data:", error);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -199,7 +203,7 @@ export default function MyTeamScreen() {
   };
 
   const handleChat = () => {
-    console.log("Open chat");
+    // TODO: Implement chat functionality
   };
 
   const handleTabPress = (tab: HeaderTab) => {
@@ -207,29 +211,20 @@ export default function MyTeamScreen() {
     // TODO: Navigate to respective screens when implemented
   };
 
-  const handleQuickAction = (actionKey: string) => {
-    console.log("Quick action:", actionKey);
-    // TODO: Navigate to respective screens
+  const handleQuickAction = (_actionKey: string) => {
+    // TODO: Navigate to respective screens based on actionKey
   };
 
   const handleEditStarters = () => {
-    console.log("Edit starters");
     // TODO: Open edit starters modal/screen
   };
 
   const handleEditBench = () => {
-    console.log("Edit bench");
     // TODO: Open edit bench modal/screen
   };
 
-  const handlePlayerPress = (player: Player | null, position: string) => {
-    if (player) {
-      console.log("View player:", player.ign);
-      // TODO: Navigate to player details
-    } else {
-      console.log("Add player to position:", position);
-      // TODO: Open player selection
-    }
+  const handlePlayerPress = (_player: Player | null, _position: string) => {
+    // TODO: Navigate to player details or open player selection
   };
 
   // Sync all starters ScrollViews
