@@ -183,11 +183,9 @@ export function PlayerRankings({
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <View style={styles.rankingIcon}>
-            <Text style={styles.rankingIconText}>1</Text>
-            <Text style={styles.rankingIconText}>2</Text>
-            <Text style={styles.rankingIconText}>3</Text>
+            <Ionicons name="trophy" size={16} color={colors.primary} />
           </View>
-          <Text style={styles.headerTitle}>PLAYER RANKINGS</Text>
+          <Text style={styles.headerTitle}>FANTASY PRO PLAYER RANKINGS</Text>
         </View>
       </View>
 

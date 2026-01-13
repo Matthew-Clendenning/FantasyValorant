@@ -4,7 +4,7 @@
     "slug": "FantasyValorant",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/fv_logo_3.png",
     "scheme": "fantasyvalorant",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -23,7 +23,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/fv_logo_3.png"
     },
     "plugins": [
       "expo-router",

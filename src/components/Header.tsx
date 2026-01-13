@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { colors } from "../styles/theme";
 
 interface HeaderProps {
   title: string;
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 60,
     paddingBottom: 16,
-    backgroundColor: "#0a1218ff",
+    backgroundColor: colors.backgroundDarker,
   },
   settingsButton: {
     width: 32,

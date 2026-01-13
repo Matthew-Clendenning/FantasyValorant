@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Image,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -301,8 +302,9 @@ export default function MyTeamScreen() {
     );
   }
 
-  const teamName = leagueMember?.team_name ||
+  const fullTeamName = leagueMember?.team_name ||
     (user ? `${user.user_metadata?.username || "My"}'s Team` : "My Team");
+  const teamName = fullTeamName.length > 16 ? `${fullTeamName.slice(0, 16)}...` : fullTeamName;
   const ownerName = user?.user_metadata?.username || "Owner";
 
   return (
@@ -313,8 +315,11 @@ export default function MyTeamScreen() {
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </Pressable>
         <View style={styles.headerTitleContainer}>
-          <View style={styles.teamIconSmall}>
-            <Ionicons name="shirt" size={18} color={colors.primary} />
+          <View>
+            <Image
+              source={require("../../../assets/images/fv_logo_3.png")}
+              style={styles.logo}
+            />
           </View>
           <Text style={styles.headerTitle} numberOfLines={1}>
             {teamName}
@@ -414,7 +419,7 @@ export default function MyTeamScreen() {
           {STARTER_POSITIONS.map((pos, index) => {
             const rosterPlayer = starters[index];
             return (
-              <View key={pos.key} style={styles.playerRow}>
+              <View key={pos.key} style={[styles.playerRow, { backgroundColor: index % 2 === 0 ? colors.background : colors.backgroundDark }]}>
                 <Pressable
                   style={styles.playerInfoSection}
                   onPress={() => handlePlayerPress(rosterPlayer?.player || null, pos.key)}
@@ -490,7 +495,7 @@ export default function MyTeamScreen() {
           {BENCH_POSITIONS.map((pos, index) => {
             const rosterPlayer = bench[index];
             return (
-              <View key={`${pos.key}-${index}`} style={styles.playerRow}>
+              <View key={`${pos.key}-${index}`} style={[styles.playerRow, { backgroundColor: index % 2 === 0 ? colors.background : colors.backgroundDark }]}>
                 <Pressable
                   style={styles.playerInfoSection}
                   onPress={() => handlePlayerPress(rosterPlayer?.player || null, pos.key)}
@@ -540,7 +545,7 @@ export default function MyTeamScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.backgroundDark,
   },
   loadingContainer: {
     flex: 1,
@@ -554,7 +559,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 12,
     paddingBottom: 8,
-    backgroundColor: colors.backgroundDark,
+    backgroundColor: colors.backgroundDarker,
   },
   backButton: {
     width: 40,
@@ -569,16 +574,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  teamIconSmall: {
+  logo: {
     width: 28,
     height: 28,
-    backgroundColor: colors.surface,
-    borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
+    resizeMode: "contain",
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
     color: colors.text,
     maxWidth: 180,
@@ -594,7 +596,7 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: "row",
-    backgroundColor: colors.backgroundDark,
+    backgroundColor: colors.backgroundDarker,
     borderBottomWidth: 1,
     borderBottomColor: colors.surface,
   },
@@ -628,7 +630,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 12,
     backgroundColor: colors.backgroundDark,
   },
   teamInfoLeft: {
@@ -640,8 +642,6 @@ const styles = StyleSheet.create({
   teamIconLarge: {
     width: 48,
     height: 48,
-    backgroundColor: colors.surface,
-    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -670,16 +670,15 @@ const styles = StyleSheet.create({
   },
   quickActionsScroll: {
     backgroundColor: colors.backgroundDark,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.surface,
   },
   quickActionsContent: {
     paddingHorizontal: 12,
-    paddingVertical: 12,
-    gap: 8,
+    paddingVertical: 18,
+    paddingTop: 0,
+    gap: 4,
   },
   quickActionItem: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceLight,
     borderRadius: 8,
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -702,7 +701,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   rosterSection: {
-    marginTop: 8,
+    
   },
   rosterHeader: {
     flexDirection: "row",
@@ -756,12 +755,14 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   positionBadge: {
-    paddingHorizontal: 10,
+    width: 48,
     paddingVertical: 6,
     borderRadius: 4,
     borderWidth: 1.5,
     borderColor: "#5B8DEF",
     backgroundColor: "transparent",
+    alignItems: "center",
+    justifyContent: "center",
   },
   benchBadge: {
     borderColor: colors.textMuted,
@@ -812,10 +813,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
-    backgroundColor: colors.background,
-    paddingVertical: 12,
+    backgroundColor: colors.backgroundDark,
+    paddingVertical: 16,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
     borderBottomColor: colors.surface,
   },
   totalsLabel: {
